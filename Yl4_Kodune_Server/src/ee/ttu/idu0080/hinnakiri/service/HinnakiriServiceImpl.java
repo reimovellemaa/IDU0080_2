@@ -50,10 +50,10 @@ public class HinnakiriServiceImpl implements HinnakiriService {
 		if (maximumPrice < 0) {
 			throw new HinnakiriNegNumberFormatException();
 		}
-		if (maximumPrice == 0) {
+		else if (maximumPrice == 0) {
 			throw new HinnakiriZeroNumberFormatException();
 		}
-		if (decimalLength > 2) {
+		else if (decimalLength > 2) {
 
 			throw new HinnakiriPrecisionFormatException();
 
