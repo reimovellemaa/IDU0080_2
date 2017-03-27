@@ -26,49 +26,58 @@ import ee.ttu.idu0080.hinnakiri.util.IsikukoodValidator;
 @javax.jws.WebService(serviceName = "HinnakiriService", portName = "HinnakiriPort", targetNamespace = "http://www.ttu.ee/idu0080/hinnakiri/wsdl/1.0", endpointInterface = "ee.ttu.idu0080.hinnakiri.service.HinnakiriService")
 public class HinnakiriServiceImpl implements HinnakiriService {
 
-	private static final Logger logger = Logger
-			.getLogger(HinnakiriServiceImpl.class.getName());
+	private static final Logger logger = Logger.getLogger(HinnakiriServiceImpl.class.getName());
 
-	public GetHinnakiriResponse getHinnakiri(java.lang.String parameters) 
-		throws HinnakiriNumberFormatException, HinnakiriNegNumberFormatException
-	{
+	public GetHinnakiriResponse getHinnakiri(java.lang.String parameters) throws HinnakiriNumberFormatException,
+			HinnakiriNegNumberFormatException, HinnakiriZeroNumberFormatException, HinnakiriPrecisionFormatException {
 		logger.info("Executing operation getHinnakiri");
-		
+
 		Double maximumPrice;
-		
-//		if (!IsikukoodValidator.isValid(parameters)) {
-//			throw new WebServiceException("Isikukood ei ole kehtiv");
-//		}
-		
+		int decimalLength;
+
+		// if (!IsikukoodValidator.isValid(parameters)) {
+		// throw new WebServiceException("Isikukood ei ole kehtiv");
+		// }
+
 		try {
 			maximumPrice = Double.parseDouble(parameters);
+			String[] splitter = maximumPrice.toString().split("\\.");
+			decimalLength = splitter[1].length();
 		} catch (NumberFormatException e) {
 			throw new HinnakiriNumberFormatException();
 		}
-		
+
 		if (maximumPrice < 0) {
 			throw new HinnakiriNegNumberFormatException();
 		}
-		
+		if (maximumPrice == 0) {
+			throw new HinnakiriZeroNumberFormatException();
+		}
+		if (decimalLength > 2) {
+
+			throw new HinnakiriPrecisionFormatException();
+
+		}
+
 		try {
 			GetHinnakiriResponse response = new GetHinnakiriResponse();
 			Hinnakiri hinnakiri = new Hinnakiri();
-			
+
 			List<Hinnakiri.HinnakirjaRida> hinnakirjaRidaList = new ArrayList<Hinnakiri.HinnakirjaRida>();
-			
-//			if(maximumPrice >= 100.00)
-				hinnakirjaRidaList.add(createHinnakirjaRida(1, "Tuhkur", "100.00", "EEK"));
-//			if(maximumPrice >= 10.00)
-				hinnakirjaRidaList.add(createHinnakirjaRida(2, "Nugis", "10.00", "EUR"));
-//			if(maximumPrice >= 923.00)
-				hinnakirjaRidaList.add(createHinnakirjaRida(3, "Kobras", "923.00", "RBL"));
-//			if(maximumPrice >= 89.00)
-				hinnakirjaRidaList.add(createHinnakirjaRida(4, "Kakaduu", "89.00", "USD"));
+
+			// if(maximumPrice >= 100.00)
+			hinnakirjaRidaList.add(createHinnakirjaRida(1, "Tuhkur", "100.00", "EEK"));
+			// if(maximumPrice >= 10.00)
+			hinnakirjaRidaList.add(createHinnakirjaRida(2, "Nugis", "10.00", "EUR"));
+			// if(maximumPrice >= 923.00)
+			hinnakirjaRidaList.add(createHinnakirjaRida(3, "Kobras", "923.00", "RBL"));
+			// if(maximumPrice >= 89.00)
+			hinnakirjaRidaList.add(createHinnakirjaRida(4, "Kakaduu", "89.00", "USD"));
 
 			hinnakiri.getHinnakirjaRida().addAll(hinnakirjaRidaList);
 
 			response.setHinnakiri(hinnakiri);
-			
+
 			return response;
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -76,19 +85,20 @@ public class HinnakiriServiceImpl implements HinnakiriService {
 		}
 	}
 
-	private Hinnakiri.HinnakirjaRida createHinnakirjaRida(int tooteKood, String tooteNimetus, String tooteHind, String valuuta) {
+	private Hinnakiri.HinnakirjaRida createHinnakirjaRida(int tooteKood, String tooteNimetus, String tooteHind,
+			String valuuta) {
 		Hinnakiri.HinnakirjaRida hinnakirjaRida = new Hinnakiri.HinnakirjaRida();
-		
+
 		Toode toode = new Toode();
 		toode.setKood(tooteKood);
 		toode.setNimetus(tooteNimetus);
 		hinnakirjaRida.setToode(toode);
-		
+
 		Hind hind = new Hind();
 		hind.setSumma(new BigDecimal(tooteHind));
 		hind.setValuuta(valuuta);
 		hinnakirjaRida.setHind(hind);
-		
+
 		return hinnakirjaRida;
 	}
 
