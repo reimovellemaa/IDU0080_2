@@ -41,8 +41,8 @@ public final class Klient {
 			isikukoodid.add("2239311084910");
 			isikukoodid.add("311084910");
 		GetHinnakiriResponse response = null;
-//		for (int i=0; i<isikukoodid.size(); i++)
-//		{
+		for (int i=0; i < 10; i++)
+		{
 			try {
 				HinnakiriService_Service service = new HinnakiriService_Service(
 						wsdlURL);
@@ -77,8 +77,8 @@ public final class Klient {
 			catch(Exception e) {
 				System.out.println("Yldine viga: " + e);
 			}
-//			Thread.sleep(2000);
-//		}
+			Thread.sleep(2000);
+		}
 		if(response == null)
 			return;
 		
